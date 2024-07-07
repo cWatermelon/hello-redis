@@ -1,25 +1,53 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Constants } from 'src/app/constants/constants.enum';
+import { Constants } from '~/app/constants/constants.enum';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { DashboardService } from 'src/app/services/dashboard.service';
-import { StoreService } from 'src/app/services/store.service';
-import { Subject, of, takeUntil } from 'rxjs';
+import { DashboardService } from '~/app/services/dashboard.service';
+import { StoreService } from '~/app/services/store.service';
+import { of, Subject, takeUntil } from 'rxjs';
 import { debounceTime, switchMap } from 'rxjs/operators';
-import { OperateType, ModalTitle } from 'src/app/types/index.interface';
+import { ModalTitle, OperateType } from '~/app/types/index.interface';
+import { FormsModule } from '@angular/forms';
+import { NzIconModule } from 'ng-zorro-antd/icon';
+import { CommonModule } from '@angular/common';
+import { NzFormModule } from 'ng-zorro-antd/form';
+import { NzListModule } from 'ng-zorro-antd/list';
+import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzModalModule } from 'ng-zorro-antd/modal';
+import { NzButtonModule } from 'ng-zorro-antd/button';
+import { NzDividerModule } from 'ng-zorro-antd/divider';
+import { NzContentComponent, NzHeaderComponent, NzLayoutComponent, NzSiderComponent } from 'ng-zorro-antd/layout';
+import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
+import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
+import { NzSelectModule } from 'ng-zorro-antd/select';
+import { ShortTextPipe } from '~/app/shared/pipes/short-text.pipe';
+
 @Component({
   selector: 'app-dashboard',
+  standalone: true,
+  imports: [
+    FormsModule,
+    NzIconModule,
+    CommonModule,
+    NzFormModule,
+    NzListModule,
+    NzInputModule,
+    NzModalModule,
+    NzButtonModule,
+    NzDividerModule,
+    NzLayoutComponent,
+    NzToolTipModule,
+    NzPopconfirmModule,
+    NzSelectModule,
+    ShortTextPipe,
+    NzHeaderComponent,
+    NzSiderComponent,
+    NzContentComponent,
+  ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
 })
-export class DashboardComponent implements OnInit, OnDestroy {
-  constructor(
-    private readonly router: Router,
-    private readonly store: StoreService,
-    private readonly service: DashboardService,
-    private readonly message: NzMessageService
-  ) {}
-
+export default class DashboardComponent implements OnInit, OnDestroy {
   keys!: string[];
   content!: string;
   userName!: string;
@@ -30,13 +58,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
   operatorType!: OperateType;
   searchText$ = new Subject<string>();
   destroy$ = new Subject();
-
   redisTtl = 0;
   newKey!: string;
   redisKey!: string;
   expireTime!: string;
   redisValue!: string;
   dbs = Array.from({ length: 16 }).fill(1);
+
+  constructor(
+    private readonly router: Router,
+    private readonly store: StoreService,
+    private readonly service: DashboardService,
+    private readonly message: NzMessageService,
+  ) {}
 
   ngOnInit() {
     if (!sessionStorage.getItem(Constants.USER_TOKEN)) {
@@ -54,7 +88,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           }
           return of(results);
         }),
-        takeUntil(this.destroy$)
+        takeUntil(this.destroy$),
       )
       .subscribe((val) => (this.keys = val));
     this.handleGetKeys();

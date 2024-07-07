@@ -8,7 +8,10 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root',
 })
 export class DashboardService {
-  constructor(readonly http: HttpClient, private store: StoreService) {}
+  constructor(
+    readonly http: HttpClient,
+    private store: StoreService,
+  ) {}
 
   handleKeys() {
     return this.http.get<Response<string[]>>(`${environment.apiUrl}/api/v1/redis/keys`, {
